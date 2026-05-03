@@ -779,14 +779,11 @@ pub fn manage(self: *Self) void {
             }
         }
         if (self.swallowing_border != null) {
-            height -= 2 * config.border.width;
-            width -= 2 * config.border.width;
+            if (self.output != null and self.output.?.current_layout() != .float and !self.floating) {
+                width = @max(width - 2*config.border.width, self.min_width);
+                height = @max(height - 2*config.border.width, self.min_height);
+            }
         }
-
-        // river-window-management-v1 doesn't allow negtive value
-        width = @max(width, self.min_width);
-        height = @max(height, self.min_height);
-
         break :blk .{ width, height };
     };
 
@@ -825,8 +822,10 @@ pub fn render(self: *Self) void {
 
     if (self.swallowing_border) |*border| {
         border.render(config.border.color.swallowing);
-        offset_x += config.border.width;
-        offset_y += config.border.width;
+        if (self.output != null and self.output.?.current_layout() != .float and !self.floating) {
+            offset_x += config.border.width;
+            offset_y += config.border.width;
+        }
     }
 
     if (self.maximize) {

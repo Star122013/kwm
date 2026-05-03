@@ -104,10 +104,15 @@ pub fn render(self: *Self, color: u32) void {
             }
             return;
         }
-        break :blk .{
-            self.window.width + 2*config.border.width,
-            self.window.height + 2*config.border.width,
-        };
+        break :blk
+            if (self.window.output != null and self.window.output.?.current_layout() != .float and !self.window.floating) .{
+                self.window.width + 2*config.border.width,
+                self.window.height + 2*config.border.width,
+            }
+            else .{
+                self.window.width + 4*config.border.width,
+                self.window.height + 4*config.border.width,
+            };
     };
 
     self.rwm_decoration.setOffset(-2*config.border.width, -2*config.border.width);
